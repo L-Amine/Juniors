@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — JCI Tunisie</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'DM Sans', sans-serif; background: #f0f4fa; color: #1e293b; min-height: 100vh; }
+
+    /* ===== LOGIN ===== */
+    #loginPage {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0A1F44, #1a3a75);
+    }
+    .login-box {
+      background: #fff;
+      border-radius: 20px;
+      padding: 48px;
+      width: 400px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+    }
+    .login-logo {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .login-logo .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      background: #0A1F44;
+      color: #F5C518;
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: 18px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+    }
+    .login-logo h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      color: #0A1F44;
+    }
+    .login-logo p { font-size: 13px; color: #64748b; margin-top: 4px; }
+    .login-error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      font-size: 13px;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      text-align: center;
+      display: none;
+    }
+    .login-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #0A1F44;
+      display: block;
+      margin-bottom: 8px;
+    }
+    .login-input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 15px;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      background: #f1f4f9;
+      margin-bottom: 20px;
+      transition: border-color 0.2s;
+    }
+    .login-input:focus { border-color: #0A1F44; background: #fff; }
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #0A1F44, #1a3a75);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .login-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(10,31,68,0.3); }
+
+    /* ===== DASHBOARD ===== */
+    #dashPage { display: none; }
+    .layout { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      min-width: 250px;
+      background: #0A1F44;
+      display: flex;
+      flex-direction: column;
+      padding: 24px 0;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    .sb-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 20px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 20px;
+    }
+    .sb-brand .mk {
+      width: 38px; height: 38px;
+      background: #F5C518;
+      color: #0A1F44;
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: 12px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .sb-brand .tx .m { font-size: 13px; font-weight: 700; color: #fff; display: block; }
+    .sb-brand .tx .s { font-size: 10px; color: rgba(255,255,255,0.5); }
+    .sb-section { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,0.35); padding: 0 20px; margin-bottom: 8px; }
+    .sb-menu { list-style: none; padding: 0 10px; margin-bottom: 20px; }
+    .sb-menu li a {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 8px;
+      font-size: 14px; font-weight: 500;
+      color: rgba(255,255,255,0.6);
+      text-decoration: none; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .sb-menu li a:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .sb-menu li a.active { background: rgba(245,197,24,0.15); color: #F5C518; }
+    .sb-menu li a .ic { font-size: 16px; width: 22px; text-align: center; }
+    .sb-badge { background: #F5C518; color: #0A1F44; font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 100px; margin-left: auto; }
+    .sb-footer { margin-top: auto; padding: 16px 20px 0; border-top: 1px solid rgba(255,255,255,0.1); }
+    .sb-user { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .sb-avatar { width: 34px; height: 34px; background: #F5C518; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+    .sb-user-name { font-size: 13px; font-weight: 600; color: #fff; }
+    .sb-user-role { font-size: 11px; color: rgba(255,255,255,0.5); }
+    .logout-btn {
+      width: 100%; padding: 9px;
+      background: rgba(239,68,68,0.15);
+      color: #fca5a5;
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: 8px;
+      font-size: 13px; font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .logout-btn:hover { background: rgba(239,68,68,0.3); color: #fff; }
+
+    /* Main */
+    .main { margin-left: 250px; padding: 32px 36px; flex: 1; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+    .topbar h1 { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 900; color: #0A1F44; }
+    .topbar h1 span { color: #F5C518; }
+    .date-chip { font-size: 13px; color: #64748b; background: #fff; padding: 8px 16px; border-radius: 100px; border: 1px solid #e2e8f0; }
+
+    /* Stats */
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+    .stat-card { background: #fff; border-radius: 16px; padding: 20px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 14px; }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(10,31,68,0.1); transition: all 0.2s; }
+    .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+    .ic-1 { background: rgba(10,31,68,0.08); }
+    .ic-2 { background: rgba(245,197,24,0.15); }
+    .ic-3 { background: rgba(16,185,129,0.1); }
+    .ic-4 { background: rgba(239,68,68,0.1); }
+    .stat-num { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 900; color: #0A1F44; line-height: 1; }
+    .stat-lbl { font-size: 12px; color: #64748b; margin-top: 2px; }
+
+    /* Panel */
+    .panel { background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 24px; overflow: hidden; }
+    .panel-head { padding: 18px 24px; border-bottom: 1px solid #f1f4f9; display: flex; align-items: center; justify-content: space-between; }
+    .panel-title { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; color: #0A1F44; }
+    .panel-body { padding: 24px; }
+
+    /* Form */
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+    .form-full { margin-bottom: 18px; }
+    .field-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #0A1F44; display: block; margin-bottom: 7px; }
+    .field-input, .field-select, .field-textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      color: #1e293b;
+      background: #f1f4f9;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .field-input:focus, .field-select:focus, .field-textarea:focus {
+      border-color: #0A1F44;
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(10,31,68,0.06);
+    }
+    .field-textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+
+    /* Photos */
+    .photos-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .photo-slot {
+      aspect-ratio: 1;
+      border: 2px dashed #e2e8f0;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      background: #f1f4f9;
+      transition: all 0.2s;
+    }
+    .photo-slot:hover { border-color: #0A1F44; background: rgba(10,31,68,0.04); }
+    .photo-slot.filled { border-style: solid; border-color: #0A1F44; }
+    .photo-slot input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .photo-slot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; }
+    .photo-slot.filled img { display: block; }
+    .photo-slot .slot-label { display: flex; flex-direction: column; align-items: center; gap: 6px; pointer-events: none; }
+    .photo-slot .slot-label .emoji { font-size: 26px; opacity: 0.4; }
+    .photo-slot .slot-label span { font-size: 11px; color: #94a3b8; font-weight: 600; }
+    .photo-slot.filled .slot-label { display: none; }
+    .photo-slot .rm { position: absolute; top: 5px; right: 5px; width: 22px; height: 22px; background: rgba(239,68,68,0.9); color: #fff; border: none; border-radius: 50%; font-size: 12px; cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 2; }
+    .photo-slot.filled .rm { display: flex; }
+
+    /* Submit row */
+    .submit-row { display: flex; align-items: center; gap: 14px; margin-top: 20px; flex-wrap: wrap; }
+    .pub-btn {
+      padding: 13px 28px;
+      background: linear-gradient(135deg, #0A1F44, #1a3a75);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .pub-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(10,31,68,0.3); }
+    .pub-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .msg { font-size: 14px; font-weight: 600; padding: 10px 14px; border-radius: 8px; display: none; }
+    .msg.ok { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; display: block; }
+    .msg.er { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; display: block; }
+
+    /* Activities list */
+    .act-list { display: flex; flex-direction: column; gap: 14px; }
+    .act-item { display: flex; gap: 14px; align-items: flex-start; padding: 16px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8fafc; transition: all 0.2s; }
+    .act-item:hover { border-color: #0A1F44; background: #fff; }
+    .act-thumbs { display: flex; gap: 5px; flex-shrink: 0; }
+    .act-thumbs img { width: 52px; height: 52px; object-fit: cover; border-radius: 7px; }
+    .no-thumb { width: 52px; height: 52px; background: #e2e8f0; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .act-info { flex: 1; min-width: 0; }
+    .act-meta { display: flex; gap: 8px; align-items: center; margin-bottom: 5px; }
+    .act-cat { font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 2px 9px; border-radius: 100px; background: #FEF3C7; color: #0A1F44; }
+    .act-date { font-size: 11px; color: #94a3b8; }
+    .act-name { font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 700; color: #0A1F44; margin-bottom: 3px; }
+    .act-desc { font-size: 13px; color: #64748b; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .del-btn { padding: 7px 12px; background: none; border: 1px solid #fecaca; color: #dc2626; border-radius: 7px; font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; white-space: nowrap; transition: all 0.2s; flex-shrink: 0; }
+    .del-btn:hover { background: #fef2f2; }
+    .empty-state { text-align: center; padding: 40px; color: #94a3b8; }
+    .empty-state .ei { font-size: 44px; margin-bottom: 10px; opacity: 0.5; }
+    .refresh-btn { padding: 9px 18px; background: linear-gradient(135deg, #0A1F44, #1a3a75); color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+
+    /* Toast */
+    #toast { position: fixed; bottom: 24px; right: 24px; padding: 13px 18px; border-radius: 10px; font-size: 14px; font-weight: 600; color: #fff; z-index: 9999; opacity: 0; transform: translateY(60px); transition: all 0.3s; pointer-events: none; }
+    #toast.show { opacity: 1; transform: translateY(0); }
+    #toast.ok { background: #10b981; }
+    #toast.er { background: #ef4444; }
+
+    @media (max-width: 900px) {
+      .sidebar { position: relative; width: 100%; height: auto; }
+      .main { margin-left: 0; padding: 20px 16px; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .form-row { grid-template-columns: 1fr; }
+      .photos-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="loginPage">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="badge">JCI</div>
+      <h2>Admin JCI Tunisie</h2>
+      <p>Espace réservé aux administrateurs</p>
+    </div>
+    <div id="loginError" class="login-error">❌ Mot de passe incorrect</div>
+    <label class="login-label">Mot de passe</label>
+    <input type="password" id="pwInput" class="login-input" placeholder="••••••••">
+    <button class="login-btn" onclick="doLogin()">Accéder au tableau de bord →</button>
+  </div>
+</div>
+
+<!-- ===== DASHBOARD ===== -->
+<div id="dashPage">
+  <div class="layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sb-brand">
+        <div class="mk">JCI</div>
+        <div class="tx">
+          <span class="m">Admin Panel</span>
+          <span class="s">JCI Tunisie</span>
+        </div>
+      </div>
+      <div class="sb-section">Menu</div>
+      <ul class="sb-menu">
+        <li><a id="navAdd" class="active" onclick="showTab('add')"><span class="ic">➕</span> Ajouter activité</a></li>
+        <li><a id="navList" onclick="showTab('list')"><span class="ic">📋</span> Activités <span class="sb-badge" id="totalBadge">0</span></a></li>
+        <li><a href="index.html" target="_blank"><span class="ic">🌐</span> Voir le site</a></li>
+      </ul>
+      <div class="sb-footer">
+        <div class="sb-user">
+          <div class="sb-avatar">👤</div>
+          <div>
+            <div class="sb-user-name">Administrateur</div>
+            <div class="sb-user-role">JCI Tunisie</div>
+          </div>
+        </div>
+        <button class="logout-btn" onclick="doLogout()">🔒 Se déconnecter</button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <div class="topbar">
+        <h1>Tableau de <span>bord</span></h1>
+        <div class="date-chip" id="dateChip"></div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-icon ic-1">📊</div><div><div class="stat-num" id="st1">0</div><div class="stat-lbl">Total activités</div></div></div>
+        <div class="stat-card"><div class="stat-icon ic-2">🎓</div><div><div class="stat-num" id="st2">0</div><div class="stat-lbl">Formations</div></div></div>
+        <div class="stat-card"><div class="stat-icon ic-3">🌱</div><div><div class="stat-num" id="st3">0</div><div class="stat-lbl">Actions sociales</div></div></div>
+        <div class="stat-card"><div class="stat-icon ic-4">🏆</div><div><div class="stat-num" id="st4">0</div><div class="stat-lbl">Événements</div></div></div>
+      </div>
+
+      <!-- Panel Ajouter -->
+      <div id="tabAdd" class="panel">
+        <div class="panel-head">
+          <div class="panel-title">➕ Nouvelle activité</div>
+        </div>
+        <div class="panel-body">
+
+          <div class="form-row">
+            <div>
+              <label class="field-label">Catégorie *</label>
+              <select id="fCat" class="field-select">
+                <option value="">Choisir...</option>
+                <option value="Formation">🎓 Formation</option>
+                <option value="Action sociale">🌱 Action sociale</option>
+                <option value="Événement">🏆 Événement</option>
+                <option value="Conférence">🎤 Conférence</option>
+                <option value="Networking">🤝 Networking</option>
+                <option value="Autre">💬 Autre</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label">Nom de l'activité *</label>
+              <input type="text" id="fNom" class="field-input" placeholder="Ex: Workshop Leadership 2025">
+            </div>
+          </div>
+
+          <div class="form-full">
+            <label class="field-label">Description *</label>
+            <textarea id="fDesc" class="field-textarea" placeholder="Décrivez l'activité..."></textarea>
+          </div>
+
+          <div class="form-full">
+            <label class="field-label">Photos (4 maximum)</label>
+            <div class="photos-grid" id="photosGrid"></div>
+          </div>
+
+          <div class="submit-row">
+            <button class="pub-btn" id="pubBtn" onclick="publier()">💾 Publier l'activité</button>
+            <div class="msg" id="msgBox"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Panel Liste -->
+      <div id="tabList" class="panel" style="display:none">
+        <div class="panel-head">
+          <div class="panel-title">📋 Activités publiées</div>
+          <button class="refresh-btn" onclick="afficherListe()">🔄 Actualiser</button>
+        </div>
+        <div class="panel-body">
+          <div class="act-list" id="actList"></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  // ─── CONFIG ───────────────────────────────────────────
+  var MOT_DE_PASSE = 'jci2025';
+
+  // ─── STOCKAGE ─────────────────────────────────────────
+  function lireActs() {
+    try { return JSON.parse(localStorage.getItem('jci_activites') || '[]'); }
+    catch(e) { return []; }
+  }
+  function sauvegarderActs(arr) {
+    localStorage.setItem('jci_activites', JSON.stringify(arr));
+  }
+
+  // ─── LOGIN ────────────────────────────────────────────
+  document.getElementById('pwInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') doLogin();
+  });
+
+  function doLogin() {
+    var val = document.getElementById('pwInput').value;
+    if (val === MOT_DE_PASSE) {
+      document.getElementById('loginPage').style.display = 'none';
+      document.getElementById('dashPage').style.display = 'block';
+      sessionStorage.setItem('jci_auth', '1');
+      demarrer();
+    } else {
+      document.getElementById('loginError').style.display = 'block';
+      document.getElementById('pwInput').value = '';
+    }
+  }
+
+  function doLogout() {
+    sessionStorage.removeItem('jci_auth');
+    document.getElementById('dashPage').style.display = 'none';
+    document.getElementById('loginPage').style.display = 'flex';
+  }
+
+  if (sessionStorage.getItem('jci_auth') === '1') {
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('dashPage').style.display = 'block';
+    demarrer();
+  }
+
+  // ─── DEMARRAGE ────────────────────────────────────────
+  function demarrer() {
+    document.getElementById('dateChip').textContent =
+      new Date().toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+    creerSlots();
+    mettreAJourStats();
+  }
+
+  // ─── ONGLETS ──────────────────────────────────────────
+  function showTab(t) {
+    document.getElementById('tabAdd').style.display  = t === 'add'  ? 'block' : 'none';
+    document.getElementById('tabList').style.display = t === 'list' ? 'block' : 'none';
+    document.getElementById('navAdd').className  = t === 'add'  ? 'active' : '';
+    document.getElementById('navList').className = t === 'list' ? 'active' : '';
+    if (t === 'list') afficherListe();
+  }
+
+  // ─── PHOTOS ───────────────────────────────────────────
+  var photoFiles = [null, null, null, null];
+
+  function creerSlots() {
+    var grid = document.getElementById('photosGrid');
+    grid.innerHTML = '';
+    photoFiles = [null, null, null, null];
+
+    for (var i = 0; i < 4; i++) {
+      (function(idx) {
+        var slot = document.createElement('div');
+        slot.className = 'photo-slot';
+        slot.id = 'slot' + idx;
+
+        var fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'image/*';
+
+        var img = document.createElement('img');
+        img.id = 'prev' + idx;
+
+        var label = document.createElement('div');
+        label.className = 'slot-label';
+        label.innerHTML = '<div class="emoji">📷</div><span>Photo ' + (idx + 1) + '</span>';
+
+        var rmBtn = document.createElement('button');
+        rmBtn.className = 'rm';
+        rmBtn.type = 'button';
+        rmBtn.textContent = '✕';
+
+        slot.appendChild(fileInput);
+        slot.appendChild(img);
+        slot.appendChild(label);
+        slot.appendChild(rmBtn);
+        grid.appendChild(slot);
+
+        fileInput.addEventListener('change', function() {
+          var f = this.files[0];
+          if (!f) return;
+          photoFiles[idx] = f;
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            img.src = e.target.result;
+            slot.classList.add('filled');
+          };
+          reader.readAsDataURL(f);
+        });
+
+        rmBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          photoFiles[idx] = null;
+          img.src = '';
+          slot.classList.remove('filled');
+          fileInput.value = '';
+        });
+
+      })(i);
+    }
+  }
+
+  // ─── PUBLIER ──────────────────────────────────────────
+  function publier() {
+    var cat  = document.getElementById('fCat').value.trim();
+    var nom  = document.getElementById('fNom').value.trim();
+    var desc = document.getElementById('fDesc').value.trim();
+
+    if (!cat || !nom || !desc) {
+      afficherMsg('er', 'Veuillez remplir Catégorie, Nom et Description.');
+      return;
+    }
+
+    var btn = document.getElementById('pubBtn');
+    btn.disabled = true;
+    btn.textContent = 'Enregistrement...';
+
+    // Convertir photos en base64
+    var promises = [];
+    for (var i = 0; i < 4; i++) {
+      if (photoFiles[i]) {
+        promises.push(lireBase64(photoFiles[i]));
+      }
+    }
+
+    Promise.all(promises).then(function(photos) {
+      var act = {
+        id:     Date.now().toString(),
+        date:   new Date().toLocaleDateString('fr-FR'),
+        cat:    cat,
+        nom:    nom,
+        desc:   desc,
+        photos: photos
+      };
+
+      var all = lireActs();
+      all.unshift(act);
+      sauvegarderActs(all);
+
+      // Reset
+      document.getElementById('fCat').value  = '';
+      document.getElementById('fNom').value  = '';
+      document.getElementById('fDesc').value = '';
+      creerSlots();
+      mettreAJourStats();
+
+      afficherMsg('ok', 'Activité "' + nom + '" publiée avec succès !');
+      afficherToast('ok', 'Activité publiée !');
+
+      btn.disabled = false;
+      btn.textContent = 'Publier l\'activité';
+    });
+  }
+
+  function lireBase64(file) {
+    return new Promise(function(resolve) {
+      var reader = new FileReader();
+      reader.onload = function(e) { resolve(e.target.result); };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // ─── LISTE ────────────────────────────────────────────
+  function afficherListe() {
+    var all  = lireActs();
+    var cont = document.getElementById('actList');
+    mettreAJourStats();
+
+    if (!all.length) {
+      cont.innerHTML = '<div class="empty-state"><div class="ei">📋</div><p>Aucune activité. Ajoutez-en une !</p></div>';
+      return;
+    }
+
+    cont.innerHTML = all.map(function(a) {
+      var thumbs = '';
+      if (a.photos && a.photos.length) {
+        thumbs = a.photos.slice(0, 2).map(function(p) {
+          return '<img src="' + p + '" alt="">';
+        }).join('');
+      } else {
+        thumbs = '<div class="no-thumb">📷</div>';
+      }
+      return '<div class="act-item">' +
+        '<div class="act-thumbs">' + thumbs + '</div>' +
+        '<div class="act-info">' +
+          '<div class="act-meta"><span class="act-cat">' + (a.cat || '') + '</span><span class="act-date">' + (a.date || '') + '</span></div>' +
+          '<div class="act-name">' + (a.nom || '') + '</div>' +
+          '<div class="act-desc">' + (a.desc || '') + '</div>' +
+        '</div>' +
+        '<button class="del-btn" onclick="supprimerAct(\'' + a.id + '\')">🗑️ Supprimer</button>' +
+      '</div>';
+    }).join('');
+  }
+
+  function supprimerAct(id) {
+    if (!confirm('Supprimer cette activité ?')) return;
+    var all = lireActs().filter(function(a) { return a.id !== id; });
+    sauvegarderActs(all);
+    afficherListe();
+    afficherToast('ok', 'Activité supprimée');
+  }
+
+  // ─── STATS ────────────────────────────────────────────
+  function mettreAJourStats() {
+    var all = lireActs();
+    document.getElementById('st1').textContent = all.length;
+    document.getElementById('st2').textContent = all.filter(function(a){ return a.cat === 'Formation'; }).length;
+    document.getElementById('st3').textContent = all.filter(function(a){ return a.cat === 'Action sociale'; }).length;
+    document.getElementById('st4').textContent = all.filter(function(a){ return a.cat === 'Événement' || a.cat === 'Conférence'; }).length;
+    document.getElementById('totalBadge').textContent = all.length;
+  }
+
+  // ─── HELPERS ──────────────────────────────────────────
+  function afficherMsg(type, msg) {
+    var el = document.getElementById('msgBox');
+    el.className = 'msg ' + type;
+    el.textContent = msg;
+    setTimeout(function() { el.className = 'msg'; el.textContent = ''; }, 5000);
+  }
+
+  function afficherToast(type, msg) {
+    var t = document.getElementById('toast');
+    t.className = 'show ' + type;
+    t.textContent = msg;
+    setTimeout(function() { t.className = ''; }, 3000);
+  }
+</script>
+</body>
+</html>
